@@ -34,6 +34,23 @@ import { Expand } from '../Icons/Expand';
 const { publicRuntimeConfig } = getConfig();
 const siteTitle: string = publicRuntimeConfig.siteTitle;
 
+const initialSelectedUserState = {
+  id: '',
+  name: '',
+  userRole: '',
+  identityProviders: [],
+  relationType: {},
+  inverseRelationType: {},
+  avatarUrl: ''
+};
+
+const initialGroupForm = {
+  id: '',
+  name: '',
+  groupUsers: [],
+  description: ''
+};
+
 interface Props {
   appState?: any;
   authState?: any;
@@ -77,6 +94,12 @@ const Layout = (props: Props): any => {
   const [bottomDrawerOpen, setBottomDrawerOpen] = useState(false);
   const [harmonyOpen, setHarmonyOpen] = useState(false);
   const [fullScreenActive, setFullScreenActive] = useState(false);
+  const [detailsType, setDetailsType] = useState('');
+  const [groupFormOpen, setGroupFormOpen] = useState(false);
+  const [groupFormMode, setGroupFormMode] = useState('');
+  const [groupForm, setGroupForm] = useState(initialGroupForm);
+  const [selectedUser, setSelectedUser] = useState(initialSelectedUserState);
+  const [selectedGroup, setSelectedGroup] = useState(initialGroupForm);
   const user = authState.get('user');
   const handle = useFullScreenHandle();
 
@@ -142,7 +165,23 @@ const Layout = (props: Props): any => {
                 ) : null}
             </header>
 
-            {harmonyOpen === true && <Harmony setLeftDrawerOpen={setLeftDrawerOpen} setBottomDrawerOpen={setBottomDrawerOpen} />}
+            {harmonyOpen === true && <Harmony
+                detailsType={detailsType}
+                setDetailsType={setDetailsType}
+                groupFormOpen={groupFormOpen}
+                setGroupFormOpen={setGroupFormOpen}
+                groupFormMode={groupFormMode}
+                setGroupFormMode={setGroupFormMode}
+                groupForm={groupForm}
+                setGroupForm={setGroupForm}
+                selectedUser={selectedUser}
+                setSelectedUser={setSelectedUser}
+                selectedGroup={selectedGroup}
+                setSelectedGroup={setSelectedGroup}
+                setLeftDrawerOpen={setLeftDrawerOpen}
+                setBottomDrawerOpen={setBottomDrawerOpen}
+                setRightDrawerOpen={setRightDrawerOpen}
+            />}
             <Fragment>
               <UIDialog />
               <Alerts />
@@ -150,7 +189,24 @@ const Layout = (props: Props): any => {
             </Fragment>
             {authUser?.accessToken != null && authUser.accessToken.length > 0 && user?.id != null &&
               <Fragment>
-                <LeftDrawer harmony={true} setHarmonyOpen={setHarmonyOpen} openBottomDrawer={bottomDrawerOpen} leftDrawerOpen={leftDrawerOpen} setLeftDrawerOpen={setLeftDrawerOpen} setRightDrawerOpen={setRightDrawerOpen} setBottomDrawerOpen={setBottomDrawerOpen} />
+                <LeftDrawer
+                    detailsType={detailsType}
+                    setDetailsType={setDetailsType}
+                    groupFormOpen={groupFormOpen}
+                    setGroupFormOpen={setGroupFormOpen}
+                    groupFormMode={groupFormMode}
+                    setGroupFormMode={setGroupFormMode}
+                    groupForm={groupForm}
+                    setGroupForm={setGroupForm}
+                    selectedUser={selectedUser}
+                    setSelectedUser={setSelectedUser}
+                    selectedGroup={selectedGroup}
+                    setSelectedGroup={setSelectedGroup}
+                    openBottomDrawer={bottomDrawerOpen}
+                    leftDrawerOpen={leftDrawerOpen}
+                    setLeftDrawerOpen={setLeftDrawerOpen}
+                    setRightDrawerOpen={setRightDrawerOpen}
+                    setBottomDrawerOpen={setBottomDrawerOpen} />
               </Fragment>
             }
             {authUser?.accessToken != null && authUser.accessToken.length > 0 && user?.id != null &&
