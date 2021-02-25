@@ -122,22 +122,22 @@ const MediaIconsBox = observer((props) => {
     return (
         <section className={styles.drawerBoxContainer}>
             <section className={styles.drawerBox}>
-                {instanceMediaChatEnabled && (<div className={styles.iconContainer + ' ' + (audioPaused ? styles.off : styles.on)}>
+                {instanceMediaChatEnabled && <div className={styles.iconContainer + ' ' + (audioPaused ? styles.off : styles.on)}>
                     <Mic id='micOff' className={styles.offIcon} onClick={handleMicClick} />
                     <Mic id='micOn' className={styles.onIcon} onClick={handleMicClick} />
-                </div>)}
-                {videoEnabled && (<div className={styles.iconContainer + ' ' + (videoPaused ? styles.off : styles.on)}>
+                </div>}
+                {videoEnabled && <div className={styles.iconContainer + ' ' + (videoPaused ? styles.off : styles.on)}>
                     <Videocam id='videoOff' className={styles.offIcon} onClick={handleCamClick} />
                     <Videocam id='videoOn' className={styles.onIcon} onClick={handleCamClick} />
-                </div>)}
-                {videoEnabled && (<div className={styles.iconContainer + ' ' + (!faceTracking ? styles.off : styles.on)}>
+                </div>}
+                {videoEnabled && <div className={styles.iconContainer + ' ' + (!faceTracking ? styles.off : styles.on)}>
                     <FaceIcon className={styles.offIcon} onClick={handleFaceClick} />
                     <FaceIcon className={styles.onIcon} onClick={handleFaceClick} />
-                </div>)}
-                {xrSupported && (<div className={styles.iconContainer + ' ' + (!xrEnabled ? styles.off : styles.on)}>
+                </div>}
+                {xrSupported && <div className={styles.iconContainer + ' ' + (!xrEnabled ? styles.off : styles.on)}>
                     <VrIcon className={styles.offIcon} onClick={handleVRClick} />
                     <VrIcon className={styles.onIcon} onClick={handleVRClick} />
-                </div>)}
+                </div>}
             </section>
         </section>
     );
