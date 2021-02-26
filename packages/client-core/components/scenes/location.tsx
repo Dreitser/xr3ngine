@@ -44,6 +44,8 @@ import NamePlate from '../ui/NamePlate';
 import NetworkDebug from '../ui/NetworkDebug/NetworkDebug';
 import { OpenLink } from '../ui/OpenLink';
 import TooltipContainer from '../ui/TooltipContainer';
+import { initializeWorker } from '@xr3ngine/engine/src/initializeWorker';
+import { DefaultInitializationOptions, initializeEngine } from '@xr3ngine/engine/src/initialize';
 
 const goHome = () => window.location.href = window.location.origin;
 
@@ -226,20 +228,8 @@ export const EnginePage = (props: Props) => {
     const canvas = document.getElementById(engineRendererCanvasId) as HTMLCanvasElement;
     styleCanvas(canvas);
 
-    const useOffscreenCanvas = false;
-    let initializationOptions, initialize;
-    if(useOffscreenCanvas) {
-      const { DefaultInitializationOptions, initializeWorker } = await import('@xr3ngine/engine/src/initializeWorker');
-      initializationOptions = DefaultInitializationOptions;
-      initialize = initializeWorker;
-    } else {
-      const { DefaultInitializationOptions, initializeEngine } = await import('@xr3ngine/engine/src/initialize');
-      initializationOptions = DefaultInitializationOptions;
-      initialize = initializeEngine;
-    }
-
     const InitializationOptions = {
-      ...initializationOptions,
+      ...DefaultInitializationOptions,
       networking: {
         schema: networkSchema,
       },
@@ -248,8 +238,12 @@ export const EnginePage = (props: Props) => {
       }
     };
 
-    const engineProxy = await initialize(InitializationOptions) as EngineProxy;
-    engineProxy.loadScene(result);
+    if(canvas.transferControlToOffscreen) {
+      await initializeWorker(InitializationOptions);
+    } else {
+      await initializeEngine(InitializationOptions);
+    }
+    EngineProxy.instance.loadScene(result);
   }
 
 

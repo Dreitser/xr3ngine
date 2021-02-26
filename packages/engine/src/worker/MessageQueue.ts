@@ -182,13 +182,14 @@ class MessageQueue extends EventDispatcherProxy {
       this.sendQueue();
     }, 1000 / 60);
   }
-  sendEvent(eventType: string, eventDetail: any) {
+  sendEvent(eventType: string, eventDetail: any, transferables?: Transferable[]) {
     this.queue.push({
       messageType: MessageType.EVENT,
       message: {
         type: eventType,
         detail: eventDetail
       },
+      transferables
     } as Message);
   }
   sendQueue() {
@@ -645,7 +646,7 @@ export async function createWorker(
   canvas: HTMLCanvasElement,
   options: any
 ) {
-  const worker = new Worker(workerURL, { type: 'module' });
+  const worker = new Worker(workerURL);//, { type: 'module' });
   const messageQueue = new WorkerProxy({
     messagePort: worker,
     eventTarget: canvas,
@@ -959,7 +960,7 @@ export async function receiveWorker(onCanvas: any) {
         },
       };
 
-      onCanvas(args);
+      onCanvas(args, messageQueue);
     },
   );
   messageQueue.addEventListener('resize', ({ width, height }: any) => {

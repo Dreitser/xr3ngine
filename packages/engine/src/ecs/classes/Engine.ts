@@ -5,6 +5,7 @@
 
 import { AudioListener, Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three';
 import { CSM } from '../../assets/csm/CSM.js';
+import { EngineProxy } from '../../EngineProxy.js';
 import { ServerSpawnSystem } from "../../scene/systems/SpawnSystem";
 import { TransformComponent } from '../../transform/components/TransformComponent';
 import { EngineOptions } from '../interfaces/EngineOptions';
@@ -18,6 +19,7 @@ import { Query } from './Query';
  * Data is holded statically hence will be available everywhere.
  */
 export class Engine {
+  public static engineProxy: EngineProxy;
 
   public static engineTimer: { start: Function; stop: Function } = null
   public static engineTimerTimeout;
