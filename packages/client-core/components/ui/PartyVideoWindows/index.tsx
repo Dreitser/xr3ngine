@@ -7,6 +7,7 @@ import { observer } from 'mobx-react';
 import { selectAuthState } from "../../../redux/auth/selector";
 import { selectUserState } from "../../../redux/user/selector";
 import {connect} from "react-redux";
+import {Network} from "@xr3ngine/engine/src/networking/classes/Network";
 import {bindActionCreators, Dispatch} from "redux";
 import {
   getLayerUsers
@@ -43,8 +44,11 @@ const PartyVideoWindows = observer((props: Props): JSX.Element => {
   const channelLayerUsers = userState.get('channelLayerUsers') ?? [];
 
   useEffect(() => {
-    if (channelLayerUsers?.length > 0) setDisplayedUsers(channelLayerUsers.filter((user) => user.id !== selfUser.id));
-    else setDisplayedUsers(layerUsers.filter((user) => selfUser.partyId != null ? user.id !== selfUser.id && user.partyId === selfUser.partyId : user.id !== selfUser.id))
+    console.log('transport channelType:', (Network.instance?.transport as any)?.channelType);
+    if ((Network.instance?.transport as any)?.channelType === 'channel') setDisplayedUsers(channelLayerUsers.filter((user) => user.id !== selfUser.id));
+    else setDisplayedUsers(layerUsers.filter((user) => user.id !== selfUser.id))
+    console.log('displayedUsers:');
+    console.log(displayedUsers);
   }, [layerUsers, channelLayerUsers]);
 
   useEffect(() => {
