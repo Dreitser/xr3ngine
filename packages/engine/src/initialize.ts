@@ -51,7 +51,7 @@ export const DefaultInitializationOptions = {
 export async function initializeEngine(initOptions: any = DefaultInitializationOptions): Promise<void> {
   const options = _.defaultsDeep({}, initOptions, DefaultInitializationOptions);
 
-  new EngineProxy();
+  EngineProxy.instance = new EngineProxy();
   
 
   // Create a new world -- this holds all of our simulation state, entities, etc

@@ -44,7 +44,7 @@ import NamePlate from '../ui/NamePlate';
 import NetworkDebug from '../ui/NetworkDebug/NetworkDebug';
 import { OpenLink } from '../ui/OpenLink';
 import TooltipContainer from '../ui/TooltipContainer';
-import { initializeWorker } from '@xr3ngine/engine/src/initializeWorker';
+// import { initializeWorker } from '@xr3ngine/engine/src/initializeWorker';
 import { DefaultInitializationOptions, initializeEngine } from '@xr3ngine/engine/src/initialize';
 
 const goHome = () => window.location.href = window.location.origin;
@@ -238,11 +238,11 @@ export const EnginePage = (props: Props) => {
       }
     };
 
-    if(canvas.transferControlToOffscreen) {
-      await initializeWorker(InitializationOptions);
-    } else {
+    // if(canvas.transferControlToOffscreen) {
+    //   await initializeWorker(InitializationOptions);
+    // } else {
       await initializeEngine(InitializationOptions);
-    }
+    // }
     EngineProxy.instance.loadScene(result);
   }
 

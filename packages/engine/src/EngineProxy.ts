@@ -10,9 +10,7 @@ export class EngineProxy {
 
   static instance: EngineProxy;
   
-  constructor() {
-    EngineProxy.instance = this;
-  }
+  constructor() { }
 
   loadScene(result) {
     loadScene(result);
