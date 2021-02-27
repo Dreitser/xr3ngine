@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 // @ts-ignore
 import styles from './PartyParticipantWindow.module.scss';
 import {autorun} from 'mobx';
@@ -69,8 +69,8 @@ const mapStateToProps = (state: any): any => {
 const mapDispatchToProps = (dispatch: Dispatch): any => ({});
 
 const PartyParticipantWindow = observer((props: Props): JSX.Element => {
-    const [videoStream, setVideoStream] = useState(null);
-    const [audioStream, setAudioStream] = useState(null);
+    const [videoStream, _setVideoStream] = useState(null);
+    const [audioStream, _setAudioStream] = useState(null);
     const [videoStreamPaused, setVideoStreamPaused] = useState(false);
     const [audioStreamPaused, setAudioStreamPaused] = useState(false);
     const [videoProducerPaused, setVideoProducerPaused] = useState(false);
@@ -89,6 +89,8 @@ const PartyParticipantWindow = observer((props: Props): JSX.Element => {
     } = props;
     const videoRef = React.createRef<HTMLVideoElement>();
     const audioRef = React.createRef<HTMLAudioElement>();
+    const videoStreamRef = useRef(videoStream);
+    const audioStreamRef = useRef(audioStream);
 
     const userHasInteracted = appState.get('userHasInteracted');
     const selfUser = authState.get('user');
@@ -96,49 +98,51 @@ const PartyParticipantWindow = observer((props: Props): JSX.Element => {
     const enableGlobalMute = currentLocation?.locationSettings?.locationType === 'showroom' && selfUser?.locationAdmins?.find(locationAdmin => currentLocation.id === locationAdmin.locationId) != null;
     const user = userState.get('layerUsers').find(user => user.id === peerId);
 
-    autorun(() => {
-        const socket = (Network.instance?.transport as any)?.channelType === 'instance' ? (Network.instance?.transport as any)?.instanceSocket : (Network.instance?.transport as any)?.channelSocket;
-        if (typeof socket?.on === 'function') {
-            socket?.on(MessageTypes.WebRTCPauseConsumer.toString(), (consumerId: string) => {
-                console.log('PauseConsumer message for', consumerId);
-                if (consumerId === videoStream?.id) {
-                    setVideoProducerPaused(true);
-                } else if (consumerId === audioStream?.id) {
-                    setAudioProducerPaused(true);
-                }
-            });
+    const setVideoStream = value => {
+        videoStreamRef.current = value;
+        _setVideoStream(value);
+    };
 
-            socket?.on(MessageTypes.WebRTCResumeConsumer.toString(), (consumerId: string) => {
-                console.log('ResumeConsumer message for', consumerId);
-                if (consumerId === videoStream?.id) {
-                    setVideoProducerPaused(false);
-                } else if (consumerId === audioStream?.id) {
-                    setAudioProducerPaused(false);
-                }
-            });
+    const setAudioStream = value => {
+        audioStreamRef.current = value;
+        _setAudioStream(value);
+    };
 
-            socket?.on(MessageTypes.WebRTCPauseProducer.toString(), (producerId: string, globalMute: boolean) => {
-                console.log('PauseProducer message for ', producerId);
-                if (producerId === videoStream?.id && globalMute === true) {
-                    setVideoProducerPaused(true);
-                    setVideoProducerGlobalMute(true);
-                } else if (producerId === audioStream?.id && globalMute === true) {
-                    setAudioProducerPaused(true);
-                    setAudioProducerGlobalMute(true);
-                }
-            });
-
-            socket?.on(MessageTypes.WebRTCResumeProducer.toString(), (producerId: string) => {
-                if (producerId === videoStream?.id) {
-                    setVideoProducerPaused(false);
-                    setVideoProducerGlobalMute(false);
-                } else if (producerId === audioStream?.id) {
-                    setAudioProducerPaused(false);
-                    setAudioProducerGlobalMute(false);
-                }
-            });
+    const pauseConsumerListener = (consumerId: string) => {
+        if (consumerId === videoStreamRef?.current?.id) {
+            setVideoProducerPaused(true);
+        } else if (consumerId === audioStreamRef?.current?.id) {
+            setAudioProducerPaused(true);
         }
-    });
+    };
+
+    const resumeConsumerListener = (consumerId: string) => {
+        if (consumerId === videoStreamRef?.current?.id) {
+            setVideoProducerPaused(false);
+        } else if (consumerId === audioStreamRef?.current?.id) {
+            setAudioProducerPaused(false);
+        }
+    };
+
+    const pauseProducerListener = (producerId: string, globalMute: boolean) => {
+        if (producerId === videoStreamRef?.current?.id && globalMute === true) {
+            setVideoProducerPaused(true);
+            setVideoProducerGlobalMute(true);
+        } else if (producerId === audioStreamRef?.current?.id && globalMute === true) {
+            setAudioProducerPaused(true);
+            setAudioProducerGlobalMute(true);
+        }
+    };
+
+    const resumeProducerListener = (producerId: string) => {
+        if (producerId === videoStreamRef?.current?.id) {
+            setVideoProducerPaused(false);
+            setVideoProducerGlobalMute(false);
+        } else if (producerId === audioStreamRef?.current?.id) {
+            setAudioProducerPaused(false);
+            setAudioProducerGlobalMute(false);
+        }
+    };
 
     useEffect(() => {
         if (userHasInteracted === true && peerId !== 'me_cam' && peerId !== 'me_screen') {
@@ -165,6 +169,18 @@ const PartyParticipantWindow = observer((props: Props): JSX.Element => {
                 setAudioStream(MediaStreamSystem.instance?.consumers?.find((c: any) => c.appData.peerId === peerId && c.appData.mediaTag === 'cam-audio'));
             }
         });
+        if ((Network.instance?.transport as any)?.channelType === 'instance') {
+            (Network.instance?.transport as any)?.instanceSocket?.on(MessageTypes.WebRTCPauseConsumer.toString(), pauseConsumerListener);
+            (Network.instance?.transport as any)?.instanceSocket?.on(MessageTypes.WebRTCResumeConsumer.toString(), resumeConsumerListener);
+            (Network.instance?.transport as any)?.instanceSocket?.on(MessageTypes.WebRTCPauseProducer.toString(), pauseProducerListener);
+            (Network.instance?.transport as any)?.instanceSocket?.on(MessageTypes.WebRTCResumeProducer.toString(), resumeProducerListener);
+        }
+        else {
+            (Network.instance?.transport as any)?.channelSocket?.on(MessageTypes.WebRTCPauseConsumer.toString(), pauseConsumerListener);
+            (Network.instance?.transport as any)?.channelSocket?.on(MessageTypes.WebRTCResumeConsumer.toString(), resumeConsumerListener);
+            (Network.instance?.transport as any)?.channelSocket?.on(MessageTypes.WebRTCPauseProducer.toString(), pauseProducerListener);
+            (Network.instance?.transport as any)?.channelSocket?.on(MessageTypes.WebRTCResumeProducer.toString(), resumeProducerListener);
+        }
     }, []);
 
     useEffect(() => {

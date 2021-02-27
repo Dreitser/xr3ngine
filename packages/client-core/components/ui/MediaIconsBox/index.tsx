@@ -122,21 +122,21 @@ const MediaIconsBox = observer((props) => {
     return (
         <section className={styles.drawerBoxContainer}>
             <section className={styles.drawerBox}>
-                {instanceMediaChatEnabled && <div className={styles.iconContainer + ' ' + (audioPaused ? styles.off : styles.on)}>
-                    <Mic id='micOff' className={styles.offIcon} onClick={handleMicClick} />
-                    <Mic id='micOn' className={styles.onIcon} onClick={handleMicClick} />
+                {instanceMediaChatEnabled && <div className={styles.iconContainer + ' ' + (audioPaused ? styles.off : styles.on)}  onClick={handleMicClick} >
+                    <Mic id='micOff' className={styles.offIcon}/>
+                    <Mic id='micOn' className={styles.onIcon}/>
                 </div>}
-                {videoEnabled && <div className={styles.iconContainer + ' ' + (videoPaused ? styles.off : styles.on)}>
-                    <Videocam id='videoOff' className={styles.offIcon} onClick={handleCamClick} />
-                    <Videocam id='videoOn' className={styles.onIcon} onClick={handleCamClick} />
+                {videoEnabled && <div className={styles.iconContainer + ' ' + (videoPaused ? styles.off : styles.on)} onClick={handleCamClick} >
+                    <Videocam id='videoOff' className={styles.offIcon}/>
+                    <Videocam id='videoOn' className={styles.onIcon}/>
                 </div>}
-                {videoEnabled && <div className={styles.iconContainer + ' ' + (!faceTracking ? styles.off : styles.on)}>
-                    <FaceIcon className={styles.offIcon} onClick={handleFaceClick} />
-                    <FaceIcon className={styles.onIcon} onClick={handleFaceClick} />
+                {videoEnabled && <div className={styles.iconContainer + ' ' + (!faceTracking ? styles.off : styles.on)} onClick={handleFaceClick} >
+                    <FaceIcon className={styles.offIcon}/>
+                    <FaceIcon className={styles.onIcon}/>
                 </div>}
-                {xrSupported && <div className={styles.iconContainer + ' ' + (!xrEnabled ? styles.off : styles.on)}>
-                    <VrIcon className={styles.offIcon} onClick={handleVRClick} />
-                    <VrIcon className={styles.onIcon} onClick={handleVRClick} />
+                {xrSupported && <div className={styles.iconContainer + ' ' + (!xrEnabled ? styles.off : styles.on)} onClick={handleVRClick} >
+                    <VrIcon className={styles.offIcon}/>
+                    <VrIcon className={styles.onIcon}/>
                 </div>}
             </section>
         </section>
